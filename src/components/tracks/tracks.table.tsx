@@ -4,13 +4,13 @@ import { Table, Button, notification, Popconfirm } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
 export interface ITracks {
-    _id: string;
-    title: string;
-    description: string;
-    category: string;
-    trackUrl: string;
-    uploader: {
-        name: string;
+    id: string;
+    tieuDe: string;
+    moTa: string;
+    theLoai: string;
+    linkNhac: string;
+    ThanhVien: {
+        ten: string;
     };
 }
 
@@ -34,7 +34,7 @@ const TracksTable = () => {
     //Promise
     const getData = async () => {
         const res = await fetch(
-            `http://localhost:8000/api/v1/tracks?current=${meta.current}&pageSize=${meta.pageSize}`,
+            `http://localhost:8080/api/v1/tracks?current=${meta.current}&pageSize=${meta.pageSize}`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -59,7 +59,7 @@ const TracksTable = () => {
     };
 
     const confirm = async (track: ITracks) => {
-        const res = await fetch(`http://localhost:8000/api/v1/tracks/${track._id}`, {
+        const res = await fetch(`http://localhost:8080/api/v1/tracks/${track.id}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${access_token}`,
@@ -89,23 +89,23 @@ const TracksTable = () => {
         },
         {
             title: 'Title',
-            dataIndex: 'title',
+            dataIndex: 'tieuDe',
         },
         {
             title: 'Description',
-            dataIndex: 'description',
+            dataIndex: 'moTa',
         },
         {
             title: 'Category',
-            dataIndex: 'category',
+            dataIndex: 'theLoai',
         },
         {
             title: 'Track url',
-            dataIndex: 'trackUrl',
+            dataIndex: 'linkNhac',
         },
         {
             title: 'Uploader',
-            dataIndex: ['uploader', 'name'],
+            dataIndex: ['ThanhVien', 'ten'],
             // render: (value, record, index) => {
             //     return <div>{record.uploader.name}</div>;
             // },
@@ -117,7 +117,7 @@ const TracksTable = () => {
                     <div>
                         <Popconfirm
                             title="Delete the track"
-                            description={`Are you sure to delete this track. name = ${record.title}?`}
+                            description={`Are you sure to delete this track. name = ${record.tieuDe}?`}
                             onConfirm={() => confirm(record)}
                             okText="Yes"
                             cancelText="No"
@@ -134,7 +134,7 @@ const TracksTable = () => {
 
     const handleOnChange = async (page: number, pageSize: number) => {
         const res = await fetch(
-            `http://localhost:8000/api/v1/tracks?current=${page}&pageSize=${pageSize}`,
+            `http://localhost:8080/api/v1/tracks?current=${page}&pageSize=${pageSize}`,
             {
                 headers: {
                     Authorization: `Bearer ${access_token}`,

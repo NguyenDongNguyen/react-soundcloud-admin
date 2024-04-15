@@ -20,10 +20,10 @@ const CreateUserModal = (props: IProps) => {
 
     const onFinish = async (values: any) => {
         console.log('Success:', values);
-        const { name, email, password, age, gender, role, address } = values;
+        const { name, email, password, birthday, role } = values;
 
-        const data = { name, email, password, age, gender, role, address };
-        const res = await fetch('http://localhost:8000/api/v1/users', {
+        const data = { name, email, password, birthday, role };
+        const res = await fetch('http://localhost:8080/api/v1/users', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${access_token}`,
@@ -80,47 +80,17 @@ const CreateUserModal = (props: IProps) => {
                     style={{ marginBottom: 5 }}
                     label="Password"
                     name="password"
-                    rules={[
-                        { required: true, message: 'Please input your password!' },
-                    ]}
+                    rules={[{ required: true, message: 'Please input your password!' }]}
                 >
                     <Input.Password />
                 </Form.Item>
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Age"
-                    name="age"
-                    rules={[{ required: true, message: 'Please input your age!' }]}
+                    label="Birthday"
+                    name="birthday"
+                    rules={[{ required: true, message: 'Please input your birthday!' }]}
                 >
                     <InputNumber style={{ width: '100%' }} />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: 5 }}
-                    label="Address"
-                    name="address"
-                    rules={[
-                        { required: true, message: 'Please input your address!' },
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: 5 }}
-                    name="gender"
-                    label="Gender"
-                    rules={[{ required: true }]}
-                >
-                    <Select
-                        placeholder="Select a option and change input text above"
-                        // onChange={onGenderChange}
-                        allowClear
-                    >
-                        <Option value="MALE">male</Option>
-                        <Option value="FEMALE">female</Option>
-                        <Option value="OTHER">other</Option>
-                    </Select>
                 </Form.Item>
 
                 <Form.Item

@@ -13,11 +13,13 @@ interface IProps {
 }
 
 const UpdateUserModal = (props: IProps) => {
-
     const {
-        access_token, getData,
-        isUpdateModalOpen, setIsUpdateModalOpen,
-        dataUpdate, setDataUpdate
+        access_token,
+        getData,
+        isUpdateModalOpen,
+        setIsUpdateModalOpen,
+        dataUpdate,
+        setDataUpdate,
     } = props;
 
     const [form] = Form.useForm();
@@ -26,56 +28,56 @@ const UpdateUserModal = (props: IProps) => {
         if (dataUpdate) {
             //code
             form.setFieldsValue({
-                name: dataUpdate.name,
+                name: dataUpdate.ten,
                 email: dataUpdate.email,
-                age: dataUpdate.age,
-                address: dataUpdate.address,
-                role: dataUpdate.role,
-                gender: dataUpdate.gender,
-            })
+                birthday: dataUpdate.ngaySinh,
+                role: dataUpdate.quyen,
+            });
         }
-    }, [dataUpdate])
-
+    }, [dataUpdate]);
 
     const handleCloseCreateModal = () => {
         setIsUpdateModalOpen(false);
         form.resetFields();
         setDataUpdate(null);
-    }
+    };
 
     const onFinish = async (values: any) => {
         const { name, email, age, gender, role, address } = values;
         if (dataUpdate) {
             const data = {
-                _id: dataUpdate._id, //undefined
-                name, email, age, gender, role, address
-            }
+                _id: dataUpdate.id, //undefined
+                name,
+                email,
+                age,
+                gender,
+                role,
+                address,
+            };
 
-            const res = await fetch(
-                "http://localhost:8000/api/v1/users",
-                {
-                    method: "PATCH",
-                    headers: {
-                        'Authorization': `Bearer ${access_token}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(data)
-                })
+            const res = await fetch('http://localhost:8080/api/v1/users', {
+                method: 'PATCH',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
 
             const d = await res.json();
             if (d.data) {
                 //success
                 await getData();
                 notification.success({
-                    message: "Cập nhật user thành công.",
-                })
+                    message: 'Cập nhật user thành công.',
+                });
                 handleCloseCreateModal();
             } else {
                 ///
                 notification.error({
-                    message: "Có lỗi xảy ra",
-                    description: JSON.stringify(d.message)
-                })
+                    message: 'Có lỗi xảy ra',
+                    description: JSON.stringify(d.message),
+                });
             }
         }
     };
@@ -88,12 +90,7 @@ const UpdateUserModal = (props: IProps) => {
             onCancel={() => handleCloseCreateModal()}
             maskClosable={false}
         >
-            <Form
-                name="basic"
-                onFinish={onFinish}
-                layout="vertical"
-                form={form}
-            >
+            <Form name="basic" onFinish={onFinish} layout="vertical" form={form}>
                 <Form.Item
                     style={{ marginBottom: 5 }}
                     label="Name"
@@ -109,42 +106,15 @@ const UpdateUserModal = (props: IProps) => {
                     name="email"
                     rules={[{ required: true, message: 'Please input your email!' }]}
                 >
-                    <Input type='email' />
+                    <Input type="email" />
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Password"
-                    name="password"
-                    rules={[{ required: dataUpdate ? false : true, message: 'Please input your password!' }]}
+                    label="Birthday"
+                    name="birthday"
+                    rules={[{ required: true }]}
                 >
-                    <Input.Password
-                        disabled={dataUpdate ? true : false}
-                    />
-                </Form.Item>
-                <Form.Item
-                    style={{ marginBottom: 5 }}
-                    label="Age"
-                    name="age"
-                    rules={[{ required: true, message: 'Please input your age!' }]}
-                >
-                    <InputNumber
-                        style={{ width: "100%" }}
-                    />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: 5 }}
-                    label="Address"
-                    name="address"
-                    rules={[{ required: true, message: 'Please input your address!' }]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    style={{ marginBottom: 5 }}
-                    name="gender" label="Gender" rules={[{ required: true }]}>
                     <Select
                         placeholder="Select a option and change input text above"
                         // onChange={onGenderChange}
@@ -158,21 +128,22 @@ const UpdateUserModal = (props: IProps) => {
 
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    name="role" label="Role" rules={[{ required: true }]}>
+                    label="Role"
+                    name="role"
+                    rules={[{ required: true }]}
+                >
                     <Select
                         placeholder="Select a option and change input text above"
                         // onChange={onGenderChange}
                         allowClear
                     >
-
                         <Option value="USER">User</Option>
                         <Option value="ADMIN">Admin</Option>
                     </Select>
                 </Form.Item>
             </Form>
-
         </Modal>
-    )
-}
+    );
+};
 
 export default UpdateUserModal;

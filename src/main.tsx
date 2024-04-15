@@ -4,11 +4,17 @@ import App from './App.tsx';
 import { createBrowserRouter, Outlet, RouterProvider, Link } from 'react-router-dom';
 import UsersPage from './screens/users.page.tsx';
 
-import { TeamOutlined, FireOutlined, SoundOutlined } from '@ant-design/icons';
+import {
+    TeamOutlined,
+    FireOutlined,
+    SoundOutlined,
+    BookOutlined,
+} from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import './App.scss';
 import TracksPage from './screens/tracks.page.tsx';
+import AcceptTrackPage from './screens/acceptTrack.page.tsx';
 const items: MenuProps['items'] = [
     {
         label: <Link to={'/'}>Home</Link>,
@@ -24,6 +30,11 @@ const items: MenuProps['items'] = [
         label: <Link to="/tracks">Manage Tracks</Link>,
         key: 'tracks',
         icon: <SoundOutlined />,
+    },
+    {
+        label: <Link to="/accept-track">Accept Track</Link>,
+        key: 'accept-track',
+        icon: <BookOutlined />,
     },
 ];
 
@@ -46,13 +57,13 @@ const Header = () => {
 
 const LayoutAdmin = () => {
     const getData = async () => {
-        const res = await fetch('http://localhost:8000/api/v1/auth/login', {
+        const res = await fetch('http://localhost:8080/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: 'hoidanit@gmail.com',
+                username: 'admin@gmail.com',
                 password: '123456',
             }),
         });
@@ -87,6 +98,10 @@ const router = createBrowserRouter([
             {
                 path: 'tracks',
                 element: <TracksPage />,
+            },
+            {
+                path: 'accept-track',
+                element: <AcceptTrackPage />,
             },
         ],
     },
