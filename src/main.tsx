@@ -9,12 +9,14 @@ import {
     FireOutlined,
     SoundOutlined,
     BookOutlined,
+    SketchOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import './App.scss';
 import TracksPage from './screens/tracks.page.tsx';
 import AcceptTrackPage from './screens/acceptTrack.page.tsx';
+import UsersVipPage from './screens/usersVip.page.tsx';
 const items: MenuProps['items'] = [
     {
         label: <Link to={'/'}>Home</Link>,
@@ -35,6 +37,11 @@ const items: MenuProps['items'] = [
         label: <Link to="/accept-track">Accept Track</Link>,
         key: 'accept-track',
         icon: <BookOutlined />,
+    },
+    {
+        label: <Link to="/users-vip">Manage Users VIP</Link>,
+        key: 'users-vip',
+        icon: <SketchOutlined />,
     },
 ];
 
@@ -102,6 +109,10 @@ const router = createBrowserRouter([
             {
                 path: 'accept-track',
                 element: <AcceptTrackPage />,
+            },
+            {
+                path: 'users-vip',
+                element: <UsersVipPage />,
             },
         ],
     },
