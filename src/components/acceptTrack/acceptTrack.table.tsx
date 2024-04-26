@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 // import '../../styles/users.css';
-import { Table, Button, notification, Popconfirm, Form, Select } from 'antd';
+import { Table, Button, notification, Form, Select, Row, Col } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import InputSearch from './input.search';
 
 export interface ITracks {
     id: string;
@@ -36,6 +38,7 @@ const AcceptTrackTable = () => {
         const res = await fetch(
             `http://localhost:8080/api/v1/tracks-unPublic?current=${meta.current}&pageSize=${meta.pageSize}`,
             {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
@@ -167,33 +170,72 @@ const AcceptTrackTable = () => {
         });
     };
 
+    const handleFilter = async (keyword: string, values: string) => {
+        console.log(keyword, values);
+        const res = await fetch(
+            `http://localhost:8080/api/v1/tracks-unPublic?current=${1}&pageSize=${10}`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ [keyword]: values }),
+            }
+        );
+
+        const d = await res.json();
+        if (!d.data) {
+            notification.error({
+                message: JSON.stringify(d.message),
+            });
+        }
+        setListTracks(d.data.result);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Table List Accept Tracks</span>
+                <span style={{ display: 'flex', gap: 15 }}>
+                    <Button
+                        type="text"
+                        onClick={() => {
+                            getData();
+                        }}
+                    >
+                        <ReloadOutlined />
+                    </Button>
+                </span>
+            </div>
+        );
+    };
+
     return (
         <div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
-                <h2>Accept Tracks</h2>
-            </div>
-
-            <Table
-                columns={columns}
-                dataSource={listTracks}
-                rowKey={'_id'}
-                pagination={{
-                    current: meta.current,
-                    pageSize: meta.pageSize,
-                    total: meta.total,
-                    showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} of ${total} items`,
-                    onChange: (page: number, pageSize: number) =>
-                        handleOnChange(page, pageSize),
-                    showSizeChanger: true,
-                }}
-            />
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <InputSearch handleFilter={handleFilter} />
+                </Col>
+                <Col span={24}>
+                    <Table
+                        title={renderHeader}
+                        columns={columns}
+                        dataSource={listTracks}
+                        rowKey={'_id'}
+                        pagination={{
+                            current: meta.current,
+                            pageSize: meta.pageSize,
+                            total: meta.total,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} of ${total} items`,
+                            onChange: (page: number, pageSize: number) =>
+                                handleOnChange(page, pageSize),
+                            showSizeChanger: true,
+                        }}
+                    />
+                </Col>
+            </Row>
         </div>
     );
 };

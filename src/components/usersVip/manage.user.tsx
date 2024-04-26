@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 // import '../../styles/users.css';
-import { Table, notification, Select, Form } from 'antd';
+import { Table, notification, Select, Form, Row, Col, Button } from 'antd';
+import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import InputSearch from './input.search';
 
 export interface IUsersVip {
     id: string;
@@ -37,8 +39,9 @@ const UsersVipTable = () => {
     //Promise
     const getData = async () => {
         const res = await fetch(
-            `http://localhost:8080/api/v1/users-vip?current=${meta.current}&pageSize=${meta.pageSize}`,
+            `http://localhost:8080/api/v1/all-users-vip?current=${meta.current}&pageSize=${meta.pageSize}`,
             {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
@@ -154,33 +157,72 @@ const UsersVipTable = () => {
         });
     };
 
+    const handleFilter = async (keyword: string, values: string) => {
+        console.log(keyword, values);
+        const res = await fetch(
+            `http://localhost:8080/api/v1/all-users-vip?current=${1}&pageSize=${10}`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ [keyword]: values }),
+            }
+        );
+
+        const d = await res.json();
+        if (!d.data) {
+            notification.error({
+                message: JSON.stringify(d.message),
+            });
+        }
+        setListUsers(d.data.result);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Table List Users VIP</span>
+                <span style={{ display: 'flex', gap: 15 }}>
+                    <Button
+                        type="text"
+                        onClick={() => {
+                            getData();
+                        }}
+                    >
+                        <ReloadOutlined />
+                    </Button>
+                </span>
+            </div>
+        );
+    };
+
     return (
         <div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
-                <h2>Table Users VIP</h2>
-            </div>
-
-            <Table
-                columns={columns}
-                dataSource={listUsers}
-                rowKey={'_id'}
-                pagination={{
-                    current: meta.current,
-                    pageSize: meta.pageSize,
-                    total: meta.total,
-                    showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} of ${total} items`,
-                    onChange: (page: number, pageSize: number) =>
-                        handleOnChange(page, pageSize),
-                    showSizeChanger: true,
-                }}
-            />
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <InputSearch handleFilter={handleFilter} />
+                </Col>
+                <Col span={24}>
+                    <Table
+                        title={renderHeader}
+                        columns={columns}
+                        dataSource={listUsers}
+                        rowKey={'_id'}
+                        pagination={{
+                            current: meta.current,
+                            pageSize: meta.pageSize,
+                            total: meta.total,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} of ${total} items`,
+                            onChange: (page: number, pageSize: number) =>
+                                handleOnChange(page, pageSize),
+                            showSizeChanger: true,
+                        }}
+                    />
+                </Col>
+            </Row>
         </div>
     );
 };

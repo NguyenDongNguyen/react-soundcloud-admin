@@ -1,10 +1,16 @@
 import { useEffect, useState } from 'react';
 // import '../../styles/users.css';
-import { Table, Button, notification, Popconfirm, message } from 'antd';
+import { Table, Button, notification, Popconfirm, message, Row, Col } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlusOutlined } from '@ant-design/icons';
+import {
+    PlusOutlined,
+    CloudUploadOutlined,
+    ExportOutlined,
+    ReloadOutlined,
+} from '@ant-design/icons';
 import CreateUserModal from './create.user.modal';
 import UpdateUserModal from './update.user.modal';
+import InputSearch from './input.search';
 
 export interface IUsers {
     id: string;
@@ -43,6 +49,7 @@ const UsersTable = () => {
         const res = await fetch(
             `http://localhost:8080/api/v1/users?current=${meta.current}&pageSize=${meta.pageSize}`,
             {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
@@ -161,17 +168,50 @@ const UsersTable = () => {
         });
     };
 
-    return (
-        <div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-            >
-                <h2>Table Users</h2>
-                <div>
+    const handleFilter = async (keyword: string, values: string) => {
+        console.log(keyword, values);
+        const res = await fetch(
+            `http://localhost:8080/api/v1/users?current=${1}&pageSize=${10}`,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ [keyword]: values }),
+            }
+        );
+
+        const d = await res.json();
+        if (!d.data) {
+            notification.error({
+                message: JSON.stringify(d.message),
+            });
+        }
+        setListUsers(d.data.result);
+    };
+
+    const renderHeader = () => {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Table List Users</span>
+                <span style={{ display: 'flex', gap: 15 }}>
+                    <Button
+                        icon={<ExportOutlined />}
+                        type="primary"
+                        // onClick={handleExportData}
+                    >
+                        Export
+                    </Button>
+
+                    <Button
+                        icon={<CloudUploadOutlined />}
+                        type="primary"
+                        // onClick={() => setOpenModalImport(true)}
+                    >
+                        Import
+                    </Button>
+
                     <Button
                         icon={<PlusOutlined />}
                         type={'primary'}
@@ -179,24 +219,45 @@ const UsersTable = () => {
                     >
                         Add new
                     </Button>
-                </div>
-            </div>
 
-            <Table
-                columns={columns}
-                dataSource={listUsers}
-                rowKey={'_id'}
-                pagination={{
-                    current: meta.current,
-                    pageSize: meta.pageSize,
-                    total: meta.total,
-                    showTotal: (total, range) =>
-                        `${range[0]}-${range[1]} of ${total} items`,
-                    onChange: (page: number, pageSize: number) =>
-                        handleOnChange(page, pageSize),
-                    showSizeChanger: true,
-                }}
-            />
+                    <Button
+                        type="text"
+                        onClick={() => {
+                            getData();
+                        }}
+                    >
+                        <ReloadOutlined />
+                    </Button>
+                </span>
+            </div>
+        );
+    };
+
+    return (
+        <div>
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <InputSearch handleFilter={handleFilter} />
+                </Col>
+                <Col span={24}>
+                    <Table
+                        title={renderHeader}
+                        columns={columns}
+                        dataSource={listUsers}
+                        rowKey={'_id'}
+                        pagination={{
+                            current: meta.current,
+                            pageSize: meta.pageSize,
+                            total: meta.total,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} of ${total} items`,
+                            onChange: (page: number, pageSize: number) =>
+                                handleOnChange(page, pageSize),
+                            showSizeChanger: true,
+                        }}
+                    />
+                </Col>
+            </Row>
 
             <CreateUserModal
                 access_token={access_token}

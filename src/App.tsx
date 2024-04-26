@@ -1,56 +1,89 @@
-import { useState } from "react";
-import InputTodo from "./todo/input.todo"
+import React, { useEffect, useState } from 'react';
+import CountUp from 'react-countup';
+import { Card, Col, Row, Statistic, notification } from 'antd';
+import { valueType } from 'antd/es/statistic/utils';
 
-function App() {
+const ManageDashboardPage = () => {
+    const [listUsers, setListUsers] = useState([]);
+    const [listTracks, setListTracks] = useState([]);
 
-  const [count, setCount] = useState(10)
-  const name = "Hỏi Dân IT";
-  const age = 25;
-  const info = {
-    gender: "male",
-    address: "ha noi"
-  }
+    const access_token = localStorage.getItem('access_token') as string;
 
-  const [listTodo, setListTodo] = useState(
-    ["todo 1", "todo 2", "todo 3", "todo 4", "todo 5", "todo 6"]
-  )
+    useEffect(() => {
+        getDataUser();
+        getDataTrack();
+    }, []);
 
+    const getDataUser = async () => {
+        const res = await fetch(
+            `http://localhost:8080/api/v1/users?current=${1}&pageSize=${100}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
 
-  const handleTest = (name: string) => {
-    alert(`handle test with name = ${name}`)
-  }
+        const d = await res.json();
+        if (!d.data) {
+            notification.error({
+                message: JSON.stringify(d.message),
+            });
+        }
+        setListUsers(d.data.result);
+    };
 
-  // mounting:=  born: phase
-  return (
-    <div>
-      <div>count = {count}</div>
-      <button onClick={() => setCount(count + 1)}>Increase</button>
-      <div className="parent" id="eric" >
-        <div className="child"></div>
-      </div>
-      <InputTodo
-        name={name}
-        age={age}
-        hoidanit={info}
+    const getDataTrack = async () => {
+        const res = await fetch(
+            `http://localhost:8080/api/v1/tracks?current=${1}&pageSize=${100}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
 
-        ericFunction={handleTest}
+        const d = await res.json();
+        console.log('🚀 ~ handleOnChange ~ d:', d);
+        if (!d.data) {
+            notification.error({
+                message: JSON.stringify(d.message),
+            });
+        }
+        setListTracks(d.data.result);
+    };
 
-        listTodo={listTodo}
-        setListTodo={setListTodo}
-      />
+    const formatter = (value: valueType) => (
+        <CountUp end={value as number} duration={5} separator="," />
+    );
 
-      <br />
-      <ul>
-        {listTodo.map((item, index) => {
+    return (
+        <div style={{ margin: 15 }}>
+            <Row gutter={[40, 40]}>
+                <Col span={10}>
+                    <Card title="" bordered={false}>
+                        <Statistic
+                            title="All Users"
+                            value={listUsers.length}
+                            formatter={formatter}
+                        />
+                    </Card>
+                </Col>
+                <Col span={10}>
+                    <Card title="" bordered={false}>
+                        <Statistic
+                            title="All Tracks"
+                            value={listTracks.length}
+                            precision={2}
+                            formatter={formatter}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+        </div>
+    );
+};
 
-          return (
-            <li key={index}>{item}</li>
-
-          )
-        })}
-      </ul>
-    </div>
-  )
-}
-
-export default App
+export default ManageDashboardPage;
