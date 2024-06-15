@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, Input, notification, Select, Form, InputNumber } from 'antd';
-import { IUsers } from './users.table';
+import { ITracks } from './tracks.table';
 
 const { Option } = Select;
 interface IProps {
@@ -8,7 +8,7 @@ interface IProps {
     getData: any;
     isUpdateModalOpen: boolean;
     setIsUpdateModalOpen: (v: boolean) => void;
-    dataUpdate: null | IUsers;
+    dataUpdate: null | ITracks;
     setDataUpdate: any;
 }
 
@@ -28,10 +28,10 @@ const UpdateUserModal = (props: IProps) => {
         if (dataUpdate) {
             //code
             form.setFieldsValue({
-                name: dataUpdate.ten,
-                email: dataUpdate.email,
-                birthday: dataUpdate.ngaySinh,
-                role: dataUpdate.quyen,
+                title: dataUpdate.tieuDe,
+                description: dataUpdate.moTa,
+                category: dataUpdate.theLoai,
+                uploader: dataUpdate.ThanhVien.ten,
             });
         }
     }, [dataUpdate]);
@@ -43,19 +43,16 @@ const UpdateUserModal = (props: IProps) => {
     };
 
     const onFinish = async (values: any) => {
-        const { name, email, age, gender, role, address } = values;
+        const { title, description, category } = values;
         if (dataUpdate) {
             const data = {
                 id: dataUpdate.id, //undefined
-                name,
-                email,
-                age,
-                gender,
-                role,
-                address,
+                title,
+                description,
+                category,
             };
 
-            const res = await fetch('http://localhost:8080/api/v1/users', {
+            const res = await fetch('http://localhost:8080/api/v1/tracks', {
                 method: 'PATCH',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -69,7 +66,7 @@ const UpdateUserModal = (props: IProps) => {
                 //success
                 await getData();
                 notification.success({
-                    message: 'Cập nhật user thành công.',
+                    message: 'Cập nhật track thành công.',
                 });
                 handleCloseCreateModal();
             } else {
@@ -84,7 +81,7 @@ const UpdateUserModal = (props: IProps) => {
 
     return (
         <Modal
-            title="Update a user"
+            title="Update a track"
             open={isUpdateModalOpen}
             onOk={() => form.submit()}
             onCancel={() => handleCloseCreateModal()}
@@ -93,26 +90,28 @@ const UpdateUserModal = (props: IProps) => {
             <Form name="basic" onFinish={onFinish} layout="vertical" form={form}>
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Name"
-                    name="name"
-                    rules={[{ required: true, message: 'Please input your name!' }]}
+                    label="Title"
+                    name="title"
+                    rules={[{ required: true, message: 'Please input title track!' }]}
                 >
                     <Input />
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Email"
-                    name="email"
-                    rules={[{ required: true, message: 'Please input your email!' }]}
+                    label="Description"
+                    name="description"
+                    rules={[
+                        { required: true, message: 'Please input description track!' },
+                    ]}
                 >
-                    <Input type="email" />
+                    <Input />
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Birthday"
-                    name="birthday"
+                    label="Category"
+                    name="category"
                     rules={[{ required: true }]}
                 >
                     <Select
@@ -120,26 +119,21 @@ const UpdateUserModal = (props: IProps) => {
                         // onChange={onGenderChange}
                         allowClear
                     >
-                        <Option value="MALE">male</Option>
-                        <Option value="FEMALE">female</Option>
-                        <Option value="OTHER">other</Option>
+                        <Option value="CHILL">CHILL</Option>
+                        <Option value="WORKOUT">WORKOUT</Option>
+                        <Option value="PARTY">PARTY</Option>
                     </Select>
                 </Form.Item>
 
                 <Form.Item
                     style={{ marginBottom: 5 }}
-                    label="Role"
-                    name="role"
-                    rules={[{ required: true }]}
+                    label="Uploader"
+                    name="uploader"
+                    rules={[
+                        { required: true, message: 'Please input description track!' },
+                    ]}
                 >
-                    <Select
-                        placeholder="Select a option and change input text above"
-                        // onChange={onGenderChange}
-                        allowClear
-                    >
-                        <Option value="USER">User</Option>
-                        <Option value="ADMIN">Admin</Option>
-                    </Select>
+                    <Input disabled />
                 </Form.Item>
             </Form>
         </Modal>

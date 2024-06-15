@@ -4,6 +4,7 @@ import { Table, Button, notification, Popconfirm, Row, Col } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import InputSearch from './input.search';
+import UpdateUserModal from './update.track.modal';
 
 export interface ITracks {
     id: string;
@@ -18,6 +19,9 @@ export interface ITracks {
 
 const TracksTable = () => {
     const [listTracks, setListTracks] = useState([]);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    // generics(typescript)
+    const [dataUpdate, setDataUpdate] = useState<null | ITracks>(null);
 
     const access_token = localStorage.getItem('access_token') as string;
 
@@ -117,6 +121,15 @@ const TracksTable = () => {
             render: (value, record) => {
                 return (
                     <div>
+                        <Button
+                            onClick={() => {
+                                setDataUpdate(record);
+                                setIsUpdateModalOpen(true);
+                            }}
+                        >
+                            Edit
+                        </Button>
+
                         <Popconfirm
                             title="Delete the track"
                             description={`Are you sure to delete this track. name = ${record.tieuDe}?`}
@@ -224,6 +237,15 @@ const TracksTable = () => {
                     />
                 </Col>
             </Row>
+
+            <UpdateUserModal
+                access_token={access_token}
+                getData={getData}
+                isUpdateModalOpen={isUpdateModalOpen}
+                setIsUpdateModalOpen={setIsUpdateModalOpen}
+                dataUpdate={dataUpdate}
+                setDataUpdate={setDataUpdate}
+            />
         </div>
     );
 };

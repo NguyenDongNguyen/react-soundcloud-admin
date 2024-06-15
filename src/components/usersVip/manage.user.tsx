@@ -4,6 +4,7 @@ import { Table, notification, Select, Form, Row, Col, Button } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import InputSearch from './input.search';
+import UserViewDetail from './user.vip.detail';
 
 export interface IUsersVip {
     id: string;
@@ -16,11 +17,15 @@ export interface IUsersVip {
         quyen: string;
         ten: string;
     };
+    createdAt: string;
+    updatedAt: string;
 }
 
 const UsersVipTable = () => {
     const [listUsers, setListUsers] = useState([]);
     console.log('🚀 ~ UsersVipTable ~ listUsers:', listUsers);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
+    const [dataViewDetail, setDataViewDetail] = useState<IUsersVip | null>(null);
 
     const access_token = localStorage.getItem('access_token') as string;
 
@@ -91,6 +96,19 @@ const UsersVipTable = () => {
         {
             title: 'Email',
             dataIndex: ['ThanhVien', 'email'],
+            render: (text, record, index) => {
+                return (
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setDataViewDetail(record);
+                            setOpenViewDetail(true);
+                        }}
+                    >
+                        {record.ThanhVien.email}
+                    </a>
+                );
+            },
         },
         {
             title: 'Name',
@@ -223,6 +241,13 @@ const UsersVipTable = () => {
                     />
                 </Col>
             </Row>
+
+            <UserViewDetail
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
+            />
         </div>
     );
 };

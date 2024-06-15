@@ -72,6 +72,7 @@ const LayoutAdmin = () => {
     } = theme.useToken();
 
     useEffect(() => {
+        getData();
         if (window.location.pathname.includes('/users')) {
             setActiveMenu('users');
         }
@@ -85,6 +86,23 @@ const LayoutAdmin = () => {
             setActiveMenu('users-vip');
         }
     }, []);
+
+    const getData = async () => {
+        const res = await fetch('http://localhost:8080/api/v1/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: 'admin@gmail.com',
+                password: '123456',
+            }),
+        });
+        const d = await res.json();
+        if (d.data) {
+            localStorage.setItem('access_token', d.data.access_token);
+        }
+    };
 
     return (
         <Layout className="layout-admin" style={{ minHeight: '100vh' }}>

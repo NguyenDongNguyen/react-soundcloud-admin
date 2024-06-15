@@ -23,7 +23,7 @@ const CreateUserModal = (props: IProps) => {
         const { name, email, password, birthday, role } = values;
 
         const data = { name, email, password, birthday, role };
-        const res = await fetch('http://localhost:8080/api/v1/users', {
+        const res = await fetch('http://localhost:8080/api/v1/create-users', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${access_token}`,

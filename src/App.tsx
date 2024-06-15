@@ -18,6 +18,7 @@ const ManageDashboardPage = () => {
         const res = await fetch(
             `http://localhost:8080/api/v1/users?current=${1}&pageSize=${100}`,
             {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                     'Content-Type': 'application/json',

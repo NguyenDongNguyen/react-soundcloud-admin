@@ -11,6 +11,7 @@ export interface ITracks {
     moTa: string;
     theLoai: string;
     linkNhac: string;
+    isPublic: boolean;
     ThanhVien: {
         ten: string;
     };
@@ -129,10 +130,10 @@ const AcceptTrackTable = () => {
                                 allowClear
                                 defaultValue={false}
                             >
-                                <Select.Option key={'false'} value={false}>
+                                <Select.Option key={`${record.id}-false`} value={false}>
                                     Chờ Duyệt
                                 </Select.Option>
-                                <Select.Option key={'true'} value={true}>
+                                <Select.Option key={`${record.id}-true`} value={true}>
                                     Đã Duyệt
                                 </Select.Option>
                             </Select>
@@ -145,8 +146,9 @@ const AcceptTrackTable = () => {
 
     const handleOnChange = async (page: number, pageSize: number) => {
         const res = await fetch(
-            `http://localhost:8080/api/v1/tracks?current=${page}&pageSize=${pageSize}`,
+            `http://localhost:8080/api/v1/tracks-unPublic?current=${page}&pageSize=${pageSize}`,
             {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${access_token}`,
                     'Content-Type': 'application/json',
@@ -183,7 +185,6 @@ const AcceptTrackTable = () => {
                 body: JSON.stringify({ [keyword]: values }),
             }
         );
-
         const d = await res.json();
         if (!d.data) {
             notification.error({
@@ -222,7 +223,7 @@ const AcceptTrackTable = () => {
                         title={renderHeader}
                         columns={columns}
                         dataSource={listTracks}
-                        rowKey={'_id'}
+                        rowKey={(record) => record.id}
                         pagination={{
                             current: meta.current,
                             pageSize: meta.pageSize,

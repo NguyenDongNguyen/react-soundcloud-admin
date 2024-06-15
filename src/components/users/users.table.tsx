@@ -11,6 +11,7 @@ import {
 import CreateUserModal from './create.user.modal';
 import UpdateUserModal from './update.user.modal';
 import InputSearch from './input.search';
+import UserViewDetail from './user.view.detail';
 
 export interface IUsers {
     id: string;
@@ -18,17 +19,19 @@ export interface IUsers {
     ten: string;
     ngaySinh: string;
     quyen: string;
+    loaiTk: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const UsersTable = () => {
     const [listUsers, setListUsers] = useState([]);
-
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-
     // generics(typescript)
     const [dataUpdate, setDataUpdate] = useState<null | IUsers>(null);
+    const [openViewDetail, setOpenViewDetail] = useState(false);
+    const [dataViewDetail, setDataViewDetail] = useState<IUsers | null>(null);
 
     const access_token = localStorage.getItem('access_token') as string;
 
@@ -98,8 +101,18 @@ const UsersTable = () => {
         {
             title: 'Email',
             dataIndex: 'email',
-            render: (value, record) => {
-                return <div>{record.email}</div>;
+            render: (text, record, index) => {
+                return (
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setDataViewDetail(record);
+                            setOpenViewDetail(true);
+                        }}
+                    >
+                        {record.email}
+                    </a>
+                );
             },
         },
         {
@@ -115,14 +128,14 @@ const UsersTable = () => {
             render: (value, record) => {
                 return (
                     <div>
-                        <button
+                        <Button
                             onClick={() => {
                                 setDataUpdate(record);
                                 setIsUpdateModalOpen(true);
                             }}
                         >
                             Edit
-                        </button>
+                        </Button>
 
                         <Popconfirm
                             title="Delete the user"
@@ -264,6 +277,13 @@ const UsersTable = () => {
                 getData={getData}
                 isCreateModalOpen={isCreateModalOpen}
                 setIsCreateModalOpen={setIsCreateModalOpen}
+            />
+
+            <UserViewDetail
+                openViewDetail={openViewDetail}
+                setOpenViewDetail={setOpenViewDetail}
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
             />
 
             <UpdateUserModal
