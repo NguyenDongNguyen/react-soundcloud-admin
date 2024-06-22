@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "antd": "5.8.4",
+    "apexcharts": "^3.49.1",
     "moment": "^2.30.1",
     "react": "18.2.0",
+    "react-apexcharts": "^1.4.1",
     "react-countup": "^6.5.3",
     "react-dom": "18.2.0",
     "react-router-dom": "6.15.0",
